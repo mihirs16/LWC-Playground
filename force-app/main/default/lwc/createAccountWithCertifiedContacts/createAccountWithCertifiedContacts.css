@@ -1,0 +1,28 @@
+.card {
+    margin: 20px;
+}
+
+.certificateName {
+    width: 600px;
+}
+
+.certificateFieldContainer {
+    display: grid;
+    grid-template-columns: auto 1fr 1fr;
+    gap: 1em;
+    margin: 1em;
+    padding: 1em;
+    border: 0.5px solid rgba(0, 0, 0, 0.1);
+}
+
+.contactIterator {
+    padding: 1em;
+    margin-bottom: 1em;
+    border: 0.5px solid rgba(0, 0, 0, 0.1);
+}
+
+.submitButton {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
