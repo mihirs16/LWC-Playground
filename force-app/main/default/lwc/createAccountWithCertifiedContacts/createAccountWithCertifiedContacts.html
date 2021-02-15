@@ -4,24 +4,34 @@
             <lightning-input label="Account Name" onchange={handleAccountInput} data-id='accountName' class="slds-m-bottom_x-small"></lightning-input>
         </div>
     </lightning-card>
+    
+    <!-- to add new contacts and their certificates -->
     <lightning-card title="Create Contacts" icon-name="standard:record" class="card">
         <div class="slds-m-around_medium">
+
+            <!-- re-render for each new contact added -->
             <template for:each={contacts} for:item='contact'>
                 <div key={contact.index} class="contactIterator">
-                    <lightning-input label="Contact Name" onchange={handleContactInput} data-id={contact.index} class="slds-m-bottom_x-small" value={contact.name}></lightning-input>
+                    <lightning-input label="Contact Name" onchange={handleContactInput} data-id={contact.index} class="slds-m-bottom_x-small"></lightning-input>
+            
+                    <!-- re-render for each new certificate added -->
                     <template for:each={contact.certificates} for:item='certificate'>
                         <div class="certificateFieldContainer" key={certificate.index}>
                             <div><lightning-input onchange={handleCertificateInput} label="Certified In" class="certificateName" data-id="name" data-contactindex={contact.index} data-certindex={certificate.index}></lightning-input></div>
-                            <div><lightning-input onchange={handleCertificateInput} label="Date of Certification" type="date" data-id="date" data-contactindex={contact.index} data-certindex={certificate.index}></lightning-input></div>
+                            <div><lightning-input onchange={handleCertificateInput} label="Date of Certification" type="date" data-id="dateCert" data-contactindex={contact.index} data-certindex={certificate.index}></lightning-input></div>
                             <div><lightning-input onchange={handleCertificateInput} label="URL for Certification" data-id="url" data-contactindex={contact.index} data-certindex={certificate.index}></lightning-input></div>
                         </div>
                     </template>
+
                     <lightning-button-icon icon-name="utility:add" onclick={addCertificateField} data-index={contact.index} alternative-text="Add Certificate" class="slds-m-left_xx-small"></lightning-button-icon>
                 </div>
             </template>
+
             <lightning-button-icon icon-name="utility:add" onclick={addContactField} alternative-text="Add Contact" class="slds-m-left_xx-small"></lightning-button-icon>
         </div>
     </lightning-card>
+
+    <!-- submit button to add new record -->
     <lightning-card>
         <div class="submitButton">
             <lightning-button variant="brand" label="Create New Account" class="slds-m-left_large" onclick={createAccount}></lightning-button>

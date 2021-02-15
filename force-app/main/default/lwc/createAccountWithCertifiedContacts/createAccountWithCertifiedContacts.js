@@ -3,7 +3,6 @@ const DEBUG_MODE = true;
 
 // module imports
 import { LightningElement, track, wire } from 'lwc';
-import { createRecord } from 'lightning/uiRecordApi';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 
 // wire service imports
@@ -44,7 +43,7 @@ export default class CreateAccountWithCertifiedContact extends LightningElement 
 
     // handle account lightning-input
     handleAccountInput (event) {
-        this.account.id = event.target.value;
+        this.account.name = event.target.value;
         this.debugObject(this.account);
     }
 
@@ -103,11 +102,33 @@ export default class CreateAccountWithCertifiedContact extends LightningElement 
     // send data to apex for creating a new account
     createAccount () {
         const objToSend = {
-            newAccount: {
+            newAccount: JSON.stringify({
                 accountName: this.account.name,
                 newContacts: this.debugObject(this.contacts)
-            }
-        }
+            })
+        };
+
+        // call apex function to save a record
+        apexAddNewAccount({ newAccount: objToSend })
+        .then((result) => {
+            this.dispatchEvent (
+                new ShowToastEvent ({
+                    title: 'Create New Account',
+                    message: 'New Account created successfully!',
+                    variant: 'success'
+                })
+            );
+        })
+        .catch((err) => {
+            console.log(err);
+            this.dispatchEvent (
+                new ShowToastEvent ({
+                    title: err.body.pageErrors[0].statusCode.split('_').join(' '),
+                    message: err.body.pageErrors[0].message,
+                    variant: 'error'
+                })
+            );
+        });
 
         console.log(objToSend);
     }
