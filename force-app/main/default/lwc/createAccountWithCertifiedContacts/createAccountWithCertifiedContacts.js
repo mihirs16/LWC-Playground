@@ -53,6 +53,7 @@ export default class CreateAccountWithCertifiedContact extends LightningElement 
         this.debugObject(this.contacts);
     }
 
+    // handle certificate list lightning-input
     handleCertificateInput (event) {
         const contactIndex = event.target.dataset.contactindex;
         const certificateIndex = event.target.dataset.certindex;

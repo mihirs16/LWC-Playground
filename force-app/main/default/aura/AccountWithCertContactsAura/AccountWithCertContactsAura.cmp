@@ -1,0 +1,65 @@
+<aura:component implements="flexipage:availableForAllPageTypes" access="global" controller="AddAccountRecordController">
+    <aura:attribute 
+        name="contacts" 
+        type="List"
+        default="[
+            {
+                index: 0,
+                name: '',
+                certificates: [
+                    {
+                        index: 0,
+                        name: '',
+                        url: '',
+                        dateCert: ''
+                    }
+                ]
+            }
+        ]"
+    ></aura:attribute>
+    <aura:attribute 
+        name="account" 
+        type="String"
+        default="" 
+    ></aura:attribute>
+
+    <lightning:card title="Create an Account" iconName="standard:record">
+        <div class="slds-m-around_medium">
+            <lightning:input label="Account Name" class="slds-m-bottom_x-small" onchange="{!c.handleAccountInput}"></lightning:input>          
+        </div>
+    </lightning:card>
+
+    <!-- to add new contacts and their certificates -->
+    <lightning:card title="Create Contacts" iconName="standard:record">
+        <div class="slds-m-around_medium">
+
+            <!-- re-render for each new contact added -->
+            <aura:iteration items="{!v.contacts}" var="contact">
+                <div class="contactIterator">
+                    <div>
+                        <lightning:input label="Contact Name" onchange="{!c.handleContactInput}" id="{!contact.index}" class="slds-m-bottom_x-small" value="{!contact.name}"></lightning:input>
+                    </div>
+                    
+                    <!-- rerender for each new certificate added -->
+                    <aura:iteration items="{!contact.certificates}" var="certificate">
+                        <div class="certificateFieldContainer">
+                            <div><lightning:input onchange="{!c.handleCertificateInput}" label="Certified In" id="{!contact.index}" name="{!certificate.index + '_name'}"></lightning:input></div>
+                            <div><lightning:input type="Date" onchange="{!c.handleCertificateInput}" label="Date of Certification" id="{!contact.index}" name="{!certificate.index + '_dateCert'}"></lightning:input></div>
+                            <div><lightning:input onchange="{!c.handleCertificateInput}" label="URL for Certification" id="{!contact.index}" name="{!certificate.index + '_url'}"></lightning:input></div>
+                        </div>
+                    </aura:iteration>
+
+                    <lightning:buttonIcon iconName="utility:add" onclick="{!c.addCertificateField}" alternativeText="Add Certificate" class="slds-m-left_xx-small" name="{!contact.index}"></lightning:buttonIcon>
+                </div>            
+            </aura:iteration>
+            <lightning:buttonIcon iconName="utility:add" onclick="{!c.addContactField}" alternativeText="Add Contact" class="slds-m-left_xx-small"></lightning:buttonIcon>
+        </div>
+    </lightning:card>
+
+    <!-- submit button to add new record -->
+    <lightning:card>
+        <div class="submitButton">
+            <lightning:button variant="brand" label="Create New Account" class="slds-m-left-large" onclick="{!c.createAccount}"></lightning:button>
+        </div>
+    </lightning:card>
+</aura:component>	
