@@ -2,10 +2,19 @@
 @RestResource(urlMapping = '/telegram')
 global inherited sharing class TelegramBotController {
 
+
+    @httpGet
+    global static Contact newContact () {
+        Contact thisContact = new Contact(LastName = 'Hehe');
+        insert thisContact;
+
+        return thisContact;
+    }
+    
     // recieve messages through a POST request
     // made by the telegram webhook
     @httpPost
-    global static Telegram_Bot_Message__c recieveMessage () {
+    global static Boolean recieveMessage () {
 
         // deserialize object
         Map<String, Object> dataReceived = (Map<String, Object>) JSON.deserializeUntyped(RestContext.request.requestBody.toString());
@@ -13,18 +22,53 @@ global inherited sharing class TelegramBotController {
         Map<String, Object> chat = (Map<String, Object>) message.get('chat');
         Map<String, Object> fromUser = (Map<String, Object>) message.get('from');
 
-        // create a new message record
-        Telegram_Bot_Message__c newMessage = new Telegram_Bot_Message__c (
-            Name = (String) fromUser.get('first_name')
-            ,Message__c = (String) message.get('text')
-        );
+        // don't save message if bot or not
+        if ((Boolean) fromUser.get('is_bot')) {
+            return false;            
+        }
 
-        // save message
-        insert newMessage;
-        return newMessage;
+        // save incoming message
+        Telegram_Feed__c telegramFeed = getFeed (String.valueOf(fromUser.get('id')), String.valueOf(fromUser.get('first_name')));
+        Telegram_Message__c telegramMessage = new Telegram_Message__c (
+            Message__c = (String) message.get('text')
+            ,MessageId__c = (Integer) message.get('message_id')
+            ,Telegram_Feed__c = telegramFeed.Id
+            ,Name = fromUser.get('id') + '_' + (String) message.get('message_id')
+        );
+        insert telegramMessage;
+
+        return true;
 
     }
 
+    // fetch or create feed with contact having the recieved telegram-id
+    public static Telegram_Feed__c getFeed (String rcvdId, String rcvdLastName) {
+        
+        // fetch contacts w/ telegram-id
+        Integer teleId = Integer.valueOf(rcvdId);
+        List<Telegram_Feed__c> thisFeed = [SELECT Contact__c FROM Telegram_Feed__c WHERE Telegram_UserID__c = :teleId];
 
+        // if no contact w/ telegram-id exists
+        if (thisFeed.size() == 0) {
+            
+            // create new contact
+            contact newContact = new Contact(
+                LastName = rcvdLastName
+            );
+            insert newContact;
+
+            // create new feed for contact
+            thisFeed.add(new Telegram_Feed__c (
+                Contact__c = newContact.Id
+                ,Name = newContact.LastName
+                ,Telegram_UserID__c = teleId
+            ));            
+            insert thisFeed;
+
+        }
+
+        return thisFeed[0];
+
+    }
 
 }
