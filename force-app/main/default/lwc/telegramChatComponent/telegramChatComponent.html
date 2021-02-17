@@ -1,0 +1,13 @@
+<template>
+    <lightning-card title="Incoming Telegram">
+        <div class="slds-m-around_medium">
+            <template if:true={listOfMessages}>
+                <template for:each={listOfMessages} for:item='message'>
+                    <div key={message.id}>
+                        {message.Message__c}
+                    </div>
+                </template>
+            </template>
+        </div>
+    </lightning-card>
+</template>
