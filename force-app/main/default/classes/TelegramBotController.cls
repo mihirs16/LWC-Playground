@@ -1,16 +1,7 @@
 // public Rest API for handling Telegram Integration
 @RestResource(urlMapping = '/telegram')
-global inherited sharing class TelegramBotController {
+global class TelegramBotController {
 
-
-    @httpGet
-    global static Contact newContact () {
-        Contact thisContact = new Contact(LastName = 'Hehe');
-        insert thisContact;
-
-        return thisContact;
-    }
-    
     // recieve messages through a POST request
     // made by the telegram webhook
     @httpPost
@@ -28,12 +19,16 @@ global inherited sharing class TelegramBotController {
         }
 
         // save incoming message
-        Telegram_Feed__c telegramFeed = getFeed (String.valueOf(fromUser.get('id')), String.valueOf(fromUser.get('first_name')));
+        Telegram_Feed__c telegramFeed = getFeed (
+            String.valueOf(chat.get('id')),
+            String.valueOf(fromUser.get('id')), 
+            String.valueOf(fromUser.get('first_name')
+        ));
         Telegram_Message__c telegramMessage = new Telegram_Message__c (
             Message__c = (String) message.get('text')
             ,MessageId__c = (Integer) message.get('message_id')
             ,Telegram_Feed__c = telegramFeed.Id
-            ,Name = fromUser.get('id') + '_' + (String) message.get('message_id')
+            ,Name = String.valueOf(fromUser.get('id')) + '_' + String.valueOf(message.get('message_id'))
         );
         insert telegramMessage;
 
@@ -42,7 +37,7 @@ global inherited sharing class TelegramBotController {
     }
 
     // fetch or create feed with contact having the recieved telegram-id
-    public static Telegram_Feed__c getFeed (String rcvdId, String rcvdLastName) {
+    global static Telegram_Feed__c getFeed (String recvdChatId, String rcvdId, String rcvdLastName) {
         
         // fetch contacts w/ telegram-id
         Integer teleId = Integer.valueOf(rcvdId);
@@ -60,10 +55,11 @@ global inherited sharing class TelegramBotController {
             // create new feed for contact
             thisFeed.add(new Telegram_Feed__c (
                 Contact__c = newContact.Id
-                ,Name = newContact.LastName
+                ,Name = rcvdLastName
                 ,Telegram_UserID__c = teleId
+                ,ChatId__c = 
             ));            
-            insert thisFeed;
+            insert thisFeed[0];
 
         }
 
