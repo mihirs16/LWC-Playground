@@ -1,6 +1,6 @@
 // public Rest API for handling Telegram Integration
 @RestResource(urlMapping = '/telegram')
-global class TelegramBotController {
+global class without sharing TelegramBotController {
 
     // recieve messages through a POST request
     // made by the telegram webhook

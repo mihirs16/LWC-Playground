@@ -1,0 +1,152 @@
+<aura:component controller='Manorama_SelectCity' implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+
+    <!-- css-config -->
+    <aura:html tag='style'>
+        .slds-modal__container{
+               max-width: 60rem !important;
+               width:80% !important;
+        }
+    </aura:html>
+
+    <!-- list options -->
+    <aura:attribute 
+        name='MediumOptions' 
+        type='List'
+        default="[
+            {'label':'Print','value':'print'},
+            {'label':'TV Ad Sales','value':'tv_ad'},
+        ]" 
+    />
+    <aura:attribute 
+        name='CityOptions' 
+        type='List'
+        default="[
+            {'label':'Delhi','value':'delhi'},
+            {'label':'Bangalore','value':'bangalore'},
+            {'label':'Mumbai','value':'mumbai'},
+            {'label':'Kochi','value':'kochi'},
+            {'label':'Chennai','value':'chennai'}
+        ]" 
+    />
+    <aura:attribute 
+        name='PageOptions' 
+        type='List'
+        default="[
+            {'label':'Front Page','value':'front_page'},
+            {'label':'Full Page','value':'full_page'},
+            {'label':'Half Page','value':'half_page'},
+            {'label':'Quarter Page','value':'quarter_page'}
+        ]" 
+    />
+    <aura:attribute 
+        name='PrintOptions' 
+        type='List'
+        default="[
+            {'label':'Daily','value':'daily'},
+            {'label':'Magazine','value':'magazine'},
+        ]" 
+    />    
+    <aura:attribute 
+        name='ColorOptions' 
+        type='List'
+        default="[
+            {'label':'Color','value':'color'},
+            {'label':'Black and White','value':'b_w'},
+        ]" 
+    />    
+
+    <!-- record id -->
+    <aura:attribute name="recordId" type="String" />
+    
+    <!-- data table -->
+    <aura:attribute name="data" type="List"/>
+    <aura:attribute name="columns" type="List"/>
+    <aura:attribute name="SelectedCity" type="List" />
+
+    <!-- selected options -->
+    <aura:attribute name='isMediumSelected' type='boolean' default='false' />
+    <aura:attribute name='SelectedMediumOptions' type='List' />
+    <aura:handler name="change" value="{!v.SelectedMediumOptions}" action="{!c.selectMedium}"/>
+
+    <aura:attribute name='isCitySelected' type='boolean' default='false' />
+    <aura:attribute name='SelectedCityOptions' type='List' />
+    <aura:handler name="change" value="{!v.SelectedCityOptions}" action="{!c.selectCity}"/>
+
+    <aura:attribute name='isPrintSelected' type='boolean' default='false' />
+    <aura:attribute name='SelectedPrintOptions' type='String' />
+
+    <aura:attribute name='isPageSelected' type='boolean' default='false' />
+    <aura:attribute name='SelectedPageOptions' type='String' />
+    
+    <aura:attribute name='isColorSelected' type='boolean' default='false' />
+    <aura:attribute name='SelectedColorOptions' type='String' />
+
+    <div>        
+        <c:MultiSelectCombobox 
+            options="{!v.MediumOptions}" 
+            values="{!v.SelectedMediumOptions}" 
+            multiSelect="true" 
+            label="Medium"
+        />
+        <aura:if isTrue='{!v.isMediumSelected}'>
+            <c:MultiSelectCombobox 
+                options="{!v.CityOptions}" 
+                values="{!v.SelectedCityOptions}" 
+                multiSelect="true" 
+                label="City"
+            />
+            <aura:if isTrue="{!v.isCitySelected}">
+                <lightning:combobox 
+                    class='slds-m-top_medium'
+                    name='print'
+                    options="{!v.PrintOptions}"
+                    value="{!v.SelectedPrintOptions}"
+                    placeholder='Select a Print'
+                    label='Print'
+                    onchange='{!c.selectPrint}'
+                />
+                <aura:if isTrue="{!v.isPrintSelected}">
+                    <lightning:combobox 
+                        class='slds-m-top_medium'
+                        name='pageArea'
+                        label='Page Area'
+                        value='{!v.SelectedPageOptions}'
+                        placeholder='Select a Page Area'
+                        options='{!v.PageOptions}'
+                        onchange='{!c.selectPage}'
+                    />
+        
+                    <aura:if isTrue="{!v.isPageSelected}">
+                        <lightning:combobox 
+                            class='slds-m-top_medium'
+                            name='pageArea'
+                            label='Color Option'
+                            value='{!v.SelectedColorOptions}'
+                            placeholder='Select a Color Option'
+                            options='{!v.ColorOptions}'
+                            onchange='{!c.selectColor}'
+                        />
+        
+                        <aura:if isTrue="{!v.isColorSelected}">
+                            <div class='slds-m-top_medium'></div>
+                            <lightning:datatable
+                                columns="{!v.columns}"
+                                data="{!v.data}"
+                                keyField='sno'
+                                onrowselection='{!c.handleCitySelect}'
+                            />
+                        <div class='slds-grid slds-grid_align-center slds-m-top_medium'>
+                            <lightning:button variant='Brand' label='Confirm Selected Cities' onclick='{!c.saveSelCity}'></lightning:button>
+                        </div>
+                        </aura:if>
+                        
+                    </aura:if>
+                </aura:if>
+            </aura:if>
+        </aura:if>
+
+
+
+    </div>
+
+</aura:component>	
